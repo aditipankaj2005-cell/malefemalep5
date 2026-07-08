@@ -28,14 +28,35 @@ model = joblib.load("female_male_model.pkl")
 
 IMG_SIZE = 64
 
-st.title("🧑🏽👩🏻Female vs Male Image Classifier")
-st.write("Upload an image to predict whether it is a Male or Female.")
+# -------------------------
+# Sidebar
+# -------------------------
+st.sidebar.header("📌 Project Information")
+st.sidebar.info(
+    """
+    **Model:** Logistic Regression
+    
+    **Input:** Face Image
+    
+    **Output:** Male / Female
+    """
+)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Made by:** Aditi Srivastava")
+st.sidebar.markdown("**Roll No.:** 2401221550005")
+
+# -------------------------
+# Main Title
+# -------------------------
+st.title("🧑🏽👩🏻 Female vs Male Image Classifier")
+st.caption("Upload a face image to predict its gender.")
 
 # -------------------------
 # Upload Image
 # -------------------------
 uploaded_file = st.file_uploader(
-    "Choose an Image",
+    "📂 Choose an Image",
     type=["jpg", "jpeg", "png"]
 )
 
@@ -44,7 +65,7 @@ if uploaded_file is not None:
     # Read image using Pillow
     image = Image.open(uploaded_file)
 
-    # Convert to RGB (important if image is grayscale/RGBA)
+    # Convert to RGB
     image = image.convert("RGB")
 
     # Display image
@@ -56,22 +77,33 @@ if uploaded_file is not None:
     # Convert to NumPy array
     resized = np.array(resized)
 
-    # Flatten image for Logistic Regression
+    # Flatten image
     resized = resized.flatten()
 
     # Prediction
     prediction = model.predict([resized])[0]
-
     probability = model.predict_proba([resized])[0]
+
+    st.markdown("---")
 
     # Display prediction
     if prediction == 0:
         st.success("👩🏻 Prediction: FEMALE")
+        st.progress(int(probability[0] * 100))
     else:
-        st.success("🧑🏽Prediction: MALE")
+        st.success("🧑🏽 Prediction: MALE")
+        st.progress(int(probability[1] * 100))
 
     # Display probabilities
-    st.subheader("Prediction Confidence")
+    st.subheader("📊 Prediction Confidence")
 
-    st.write(f"👩🏻Female Probability: **{probability[0] * 100:.2f}%**")
-    st.write(f"🧑🏽 Male Probability: **{probability[1] * 100:.2f}%**")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("👩🏻 Female", f"{probability[0] * 100:.2f}%")
+
+    with col2:
+        st.metric("🧑🏽 Male", f"{probability[1] * 100:.2f}%")
+
+st.markdown("---")
+st.caption("Made by: Aditi Srivastava | Roll No.: 2401221550005")
